@@ -18,17 +18,17 @@ export default function StudentAnalysis({ student_analysis, taskContent }) {
     }
   };
   return (
-    <div className="mb-20">
+    <div className="mb-20 mt-8">
 
       <div className="px-10 py-4  mt-10 mb-10 rounded-2xl border-2 shadow-md border-gray-200 ">
         <h1 className="text-2xl text-blue-600 font-bold">
-          {student_analysis.student_name}
+          {student_analysis?.student_name}
         </h1>
-        <h2>{student_analysis.student_email}</h2>
+        <h2>{student_analysis?.student_email}</h2>
       </div>
       {taskContent[0].type === "Paragraph" && (
         <>
-          {Object.keys(student_analysis.analysis_data).map((index) => (
+          {Object.keys(student_analysis?.analysis_data).map((index) => (
             <div
               key={index}
               className="px-10 py-4 mt-10 mb-10 rounded-2xl border-2 shadow-md border-gray-200 bg-orange-50"
@@ -38,7 +38,7 @@ export default function StudentAnalysis({ student_analysis, taskContent }) {
               </h2>
               <ReadingAnalysisVisualization
                 para={taskContent[index].content}
-                wordGazeData={student_analysis.analysis_data[index]}
+                wordGazeData={student_analysis?.analysis_data[index]}
               />
             </div>
           ))}
@@ -80,12 +80,13 @@ export default function StudentAnalysis({ student_analysis, taskContent }) {
                     ))}
                 </div>
               </div>
+          
               <CodeAnalysisDetail
               student_answer={student_analysis?.student_answer[index]}
                 code={[taskContent[index].codelines]}
                 gaze={student_analysis.analysis_data[index]}
               />
-             
+              
             </div>
           ))}
         </>
@@ -101,7 +102,7 @@ export default function StudentAnalysis({ student_analysis, taskContent }) {
               <h4 className="text-md font-semibold text-blue-800 mb-3">
                 Student Feedback
               </h4>
-              {feedback?.student_feedback.map((feedback, index) => (
+              {feedback?.student_feedback?.map((feedback, index) => (
                 <div
                   key={index}
                   className="space-y-2 border-2 border-blue-200 rounded-lg p-4 "

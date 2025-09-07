@@ -31,14 +31,18 @@ export default function DisplayAnalysis() {
   };
 
   if (!analysisData) {
-    return <div><Loading /></div>;
+    return (
+      <div>
+        <Loading />
+      </div>
+    );
   }
 
   return (
     <>
       {view ? (
         <>
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-4 mt-8">
             <p
               onClick={() => setView(false)}
               className="text-3xl font-bold text-black cursor-pointer"
@@ -56,14 +60,14 @@ export default function DisplayAnalysis() {
         </>
       ) : (
         <>
-          <div className="mb-20">
+          <div className="mb-20 mt-8">
             <h1 className="text-3xl font-bold text-blue-600 mb-6">
               {analysisData.task.task_title}{" "}
               <span className="text-gray-600">({analysisData.task.type})</span>
             </h1>
-            
-              {analysisData.task.type == "Paragraph" && (
-                <>
+
+            {analysisData.task.type == "Paragraph" && (
+              <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6 mb-10">
                   {analysisData.task.task_content.map((items, index) => (
                     <div
@@ -90,10 +94,9 @@ export default function DisplayAnalysis() {
                       </div>
                     </div>
                   ))}
-                              </div>
-
-                </>
-              )}
+                </div>
+              </>
+            )}
             {analysisData.task.type == "Code" && (
               <>
                 {displayindivisual ? (

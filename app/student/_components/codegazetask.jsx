@@ -108,6 +108,22 @@ export default function CodegazeTask({ taskData }) {
           .then(() => {
             console.log("Webgazer initialized successfully");
             setWebgazerLoading(false);
+            const customizeDot = () => {
+              const dot = document.getElementById("webgazerGazeDot");
+              if (dot) {
+                dot.style.width = "25px";
+                dot.style.height = "25px";
+                dot.style.borderRadius = "50%";
+                dot.style.backgroundColor = "rgba(255, 0, 0, 0.4)";
+                dot.style.boxShadow = "0 0 10px 3px rgba(255,0,0,0.4)";
+                dot.style.zIndex = "9999";
+                dot.style.pointerEvents = "none"; 
+              } else {
+                
+                requestAnimationFrame(customizeDot);
+              }
+            };
+            customizeDot();
           })
           .catch((error) => {
             console.error("Error initializing webgazer:", error);

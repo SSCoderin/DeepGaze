@@ -3,7 +3,14 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useUser } from "@clerk/nextjs";
 import Header from "../components/Header";
-import { FiHome, FiCalendar, FiList, FiSettings, FiPlus } from "react-icons/fi";
+import {
+  FiHome,
+  FiCalendar,
+  FiList,
+  FiSettings,
+  FiPlus,
+  FiArrowLeft,
+} from "react-icons/fi";
 import Alltask from "./All-task/page";
 import AllActivity from "./All-activity/page";
 
@@ -75,7 +82,23 @@ export default function DashboardLayout({ children }) {
               </div>
             </div>
           </div>
-          {currentOption === "Dashboard" && children}
+         
+
+          {currentOption === "Dashboard" && (
+            <>
+              {window.location.pathname === "/dashboard" ? (
+                ""
+              ) : (
+                <button
+                  className="border-1 border-blue-600 text-black py-2 px-4 rounded-2xl flex flex-row items-center font-semibold hover:bg-blue-600 hover:text-white cursor-pointer"
+                  onClick={() => (window.location.href = "/dashboard")}
+                >
+                  <FiArrowLeft className="mr-2 h-4 w-4" /> back to homepage
+                </button>
+              )}
+              <>{children}</>
+            </>
+          )}
           {currentOption === "Created Task" && <Alltask />}
           {currentOption === "All Task Activities" && <AllActivity />}
         </main>

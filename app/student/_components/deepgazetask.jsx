@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import axios from "axios";
@@ -14,10 +15,11 @@ export default function DeepgazeTask({ taskData }) {
   const [wordGazeData, setWordGazeData] = useState([]);
   const lastGazeTimeRef = useRef(null);
   const currentWordRef = useRef(null);
-
+  const [ontake, setOnTake] = useState(true);
   const taskContent = taskData.task_content;
   const currentTask = taskContent[currentIndex];
   const { user } = useUser();
+
   const recordGazeDuration = (word, timestamp, x, y) => {
     const currentTime = Date.now();
     const lastGazeTime = lastGazeTimeRef.current;
@@ -87,9 +89,7 @@ export default function DeepgazeTask({ taskData }) {
 
     let webgazerScript;
     const existingScript = document.querySelector(
-      // 'script[src="https://webgazer.cs.brown.edu/webgazer.js"]'
-            'script[src="/webgazer/webgazer.js"]'
-
+      'script[src="/webgazer/webgazer.js"]'
     );
 
     const initializeWebgazer = () => {
@@ -115,6 +115,22 @@ export default function DeepgazeTask({ taskData }) {
           .then(() => {
             console.log("Webgazer initialized successfully");
             setWebgazerLoading(false);
+            const customizeDot = () => {
+              const dot = document.getElementById("webgazerGazeDot");
+              if (dot) {
+                dot.style.width = "25px";
+                dot.style.height = "25px";
+                dot.style.borderRadius = "50%";
+                dot.style.backgroundColor = "rgba(255, 0, 0, 0.4)";
+                dot.style.boxShadow = "0 0 10px 3px rgba(255,0,0,0.4)";
+                dot.style.zIndex = "9999";
+                dot.style.pointerEvents = "none"; 
+              } else {
+                
+                requestAnimationFrame(customizeDot);
+              }
+            };
+            customizeDot();
           })
           .catch((error) => {
             console.error("Error initializing webgazer:", error);
@@ -130,7 +146,6 @@ export default function DeepgazeTask({ taskData }) {
       initializeWebgazer();
     } else {
       webgazerScript = document.createElement("script");
-      // webgazerScript.src = "https://webgazer.cs.brown.edu/webgazer.js";
       webgazerScript.src = "/webgazer/webgazer.js";
       webgazerScript.defer = true;
       document.head.appendChild(webgazerScript);
@@ -176,7 +191,6 @@ export default function DeepgazeTask({ taskData }) {
       }));
 
       setWordGazeData([]);
-
       currentWordRef.current = null;
       lastGazeTimeRef.current = null;
     }
@@ -185,7 +199,6 @@ export default function DeepgazeTask({ taskData }) {
   const handleNext = () => {
     if (currentIndex < taskContent.length - 1) {
       restartWebgazer();
-
       setTimeout(() => {
         setCurrentIndex(currentIndex + 1);
       }, 300);
@@ -193,41 +206,50 @@ export default function DeepgazeTask({ taskData }) {
   };
 
   const handleSubmit = () => {
-    setAllParaGazeData((prev) => ({
-      ...prev,
+    const finalGazeData = {
+      ...allParaGazeData,
       [currentIndex]: [...wordGazeData],
-    }));
+    };
+
+    setAllParaGazeData(finalGazeData);
 
     if (window.webgazer) {
       window.webgazer.end();
     }
 
     setWebgazerLoading(true);
-    GetUploadAnalysis();
+    
+    GetUploadAnalysis(finalGazeData, false);
+
     setTimeout(() => {
       setWebgazerActive(false);
       setWebgazerLoading(false);
       setShowResults(true);
     }, 1000);
   };
-  const GetUploadAnalysis = async () => {
+
+  const GetUploadAnalysis = async (gazeDataToUpload, retry) => {
     console.log(
+      "this is what i am going to upload ",
       taskData._id,
       user.fullName,
       user.emailAddresses[0]?.emailAddress,
-      allParaGazeData
+      gazeDataToUpload 
     );
     try {
-      const response = await axios.post("/api/analysis", {
-        task_id: taskData._id,
-        student_name: user.fullName,
-        student_email: user.emailAddresses[0]?.emailAddress,
-        analysis_data: allParaGazeData,
-      });
-      if (response.data.status === "success") {
-        toast.success("submitted successfully");
+      if (ontake) {
+        const response = await axios.post("/api/analysis", {
+          task_id: taskData._id,
+          student_name: user.fullName,
+          student_email: user.emailAddresses[0]?.emailAddress,
+          analysis_data: gazeDataToUpload,
+        });
+        if (response.data.success) {
+          toast.success("submitted successfully");
+          setOnTake(retry);
+        }
+        console.log(response.data);
       }
-      console.log(response.data);
     } catch (error) {
       console.log("something went wrong ", error);
     }
@@ -235,18 +257,15 @@ export default function DeepgazeTask({ taskData }) {
 
   const renderContent = (content) => {
     if (!content) return null;
-
     const paragraphs = content.split(/\n+/);
-
     return paragraphs.map((paragraph, paraIdx) => {
       const words = paragraph.trim().split(/\s+/);
-
       return (
         <p key={paraIdx} className="mb-4 leading-relaxed">
           {words.map((word, wordIndex) => (
             <span
               key={`${paraIdx}-${wordIndex}`}
-              className="word-tracking inline-block mr-2 cursor-default"
+              className="word-tracking inline-block mr-2 cursor-default leading-[3rem]"
             >
               {word}
               {wordIndex < words.length - 1 ? " " : ""}
@@ -260,7 +279,9 @@ export default function DeepgazeTask({ taskData }) {
   return (
     <div className="flex flex-col h-screen">
       <div>
-        <h1 className="text-3xl font-bold m-4">{taskData.task_title}</h1>
+        <h1 className="text-3xl font-bold m-4">
+          {taskData.task_title.toUpperCase()}
+        </h1>
       </div>
 
       {webgazerLoading && !showResults && (
@@ -282,12 +303,12 @@ export default function DeepgazeTask({ taskData }) {
 
       {!showResults ? (
         <>
-          <div className="mx-10 px-4 py-8 border-2 rounded shadow border-gray-200">
+          <div className="mx-10 px-4 py-8 ">
             <div className="mb-4">
-              <h2 className="flex justify-center text-2xl font-bold text-blue-600 mb-6">
+              <h2 className="flex justify-center items-center text-4xl font-bold text-blue-600 mb-6">
                 {currentTask?.title}
               </h2>
-              <div className="mt-6 p-4 text-gray-700 text-2xl max-w-4xl mx-auto">
+              <div className="mt-6 p-4 px-10 text-gray-700 text-4xl font-semibold whitespace-pre-line ">
                 {currentTask?.content && renderContent(currentTask.content)}
               </div>
             </div>
@@ -313,13 +334,12 @@ export default function DeepgazeTask({ taskData }) {
           </div>
         </>
       ) : (
-        <div className="flex flex-col items-center justify-center h-full ">
-          <div className="p-10 border-2 border-gray-200 rounded-2xl shadow-md">
+        <div className="flex flex-col items-center justify-center m-auto ">
+          <div className=" p-8 border-2 border-gray-200 rounded-2xl shadow-md">
             <h2 className="text-2xl font-bold mb-4">Thank you for Submition</h2>
             <Button
               onClick={() => {
-                // GetUploadAnalysis();
-                window.location.href = "https://www.google.com";
+                window.location.reload();
               }}
               className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded ml-auto flex cursor-pointer"
             >

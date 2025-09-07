@@ -53,7 +53,7 @@ export default function UploadParagraph() {
         task_title: usertask.task_title,
         task_content: selectuploadParagraph,
         type: "Paragraph",
-        url: `${window.location.href.replace('/dashboard/upload-code', '')}/student?user_id=${user.id}&task_title=${encodeURIComponent(usertask.task_title)}&type=Paragraph`
+        url: `${window.location.origin}/student?user_id=${user.id}&task_title=${encodeURIComponent(usertask.task_title)}&type=Paragraph`
       });
       if(response.data.success){
       toast.success("Task created successfully");
@@ -69,7 +69,7 @@ export default function UploadParagraph() {
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(`${window.location.href.replace('/dashboard/upload-code', '')}/student?user_id=${user.id}&task_title=${encodeURIComponent(usertask.task_title)}&type=Paragraph`);
+      await navigator.clipboard.writeText(`${window.location.origin}/student?user_id=${user.id}&task_title=${encodeURIComponent(usertask.task_title)}&type=Paragraph`);
       toast.success("URL copied to clipboard!");
     } catch (err) {
       toast.error("Failed to copy URL");
@@ -154,7 +154,7 @@ export default function UploadParagraph() {
             <div className="grid flex-1 gap-2">
               <Input
                 className="w-full border-2 border-gray-300"
-                value={`${window.location.href.replace('/dashboard/upload-code', '')}/student?user_id=${user.id}&task_title=${encodeURIComponent(usertask.task_title)}&type=Paragraph`}
+                value={`${window.location.origin}/student?user_id=${user.id}&task_title=${encodeURIComponent(usertask.task_title)}&type=Paragraph`}
                 readOnly
               />
             </div>

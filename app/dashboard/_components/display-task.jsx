@@ -76,7 +76,7 @@ export default function DisplayTask() {
                       onClick={() =>
                         (window.location.href = `/dashboard/display-analysis/${item._id}`)
                       }
-                      className="flex-1 bg-green-600 hover:bg-green-600 text-sm px-4"
+                      className="flex-1 bg-green-600 hover:bg-green-600 text-sm px-4 cursor-pointer"
                     >
                       Analysis →
                     </Button>

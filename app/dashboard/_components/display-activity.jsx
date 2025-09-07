@@ -109,7 +109,7 @@ export default function DisplayActivity({
               </div>
               <Button
                 onClick={() =>
-                  (window.location.href = "/dashboard/new-activity")
+                  (window.location.href = "/dashboard/new-activity/Paragraph")
                 }
                 className="bg-green-600 hover:bg-green-700 cursor-pointer"
               >
@@ -155,7 +155,7 @@ export default function DisplayActivity({
           ) : (
             <div className="bg-gray-50 rounded-xl border border-gray-200 p-12 flex flex-col items-center justify-center text-center">
               <div className="text-gray-500 mb-4">
-                You don't have any paragraph Acticity!
+                You don't have any code Acticity!
               </div>
               <Button
                 onClick={() =>

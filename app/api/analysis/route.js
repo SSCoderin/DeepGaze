@@ -9,17 +9,17 @@ export async function POST(request) {
       task_id,
       student_name,
       student_email,
+      analysis_data,
       student_feedback,
       student_answer,
-      analysis_data,
     } = await request.json();
     await Connect();
     const newAnalysis = await Analysis.create({
       task_id,
       student_name,
       student_email,
-      student_feedback,
-      student_answer,
+      student_feedback : student_feedback ?? {},
+      student_answer :student_answer?? {},
       analysis_data,
     });
     return NextResponse.json({ success: true, analysis: newAnalysis });
